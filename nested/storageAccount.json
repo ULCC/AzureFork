@@ -49,7 +49,7 @@
             "name": "[parameters('moodleCommon').azureFilesStorageAccountName]",
             "kind": "[if(parameters('moodleCommon').azureFilesPremiumSwitch, 'FileStorage', 'Storage')]",
             "sku": {
-                "name": "[if(parameters('moodleCommon').azureFilesPremiumSwitch, 'Premium_LRS', parameters('moodleCommon').storageAccountType)]"
+                "name": "[if(parameters('moodleCommon').azureFilesPremiumSwitch, 'Premium_LRS', parameters('moodleCommon').storageAccountType)]",
                 "tier": "[if(parameters('moodleCommon').azureFilesPremiumSwitch, 'Premium', 'Standard']"
             },
             "properties": {
