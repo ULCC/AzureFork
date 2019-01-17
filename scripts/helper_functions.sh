@@ -124,8 +124,8 @@ function setup_and_mount_gluster_moodle_share
     local glusterNode=$1
     local glusterVolume=$2
 
-    grep -q "/moodle.*glusterfs" /etc/fstab || echo -e $glusterNode':/'$glusterVolume'   /moodle         glusterfs       defaults,_netdev,log-level=WARNING,log-file=/var/log/gluster.log 0 0' >> /etc/fstab
-    mount /moodle
+    grep -q "/moodle.*glusterfs" /etc/fstab || echo -e $glusterNode':/'$glusterVolume'   /var/www/moodle         glusterfs       defaults,_netdev,log-level=WARNING,log-file=/var/log/gluster.log 0 0' >> /etc/fstab
+    mount /var/www/moodle
 }
 
 function setup_and_mount_azure_files_moodle_share
@@ -139,12 +139,12 @@ password=$storageAccountKey
 EOF
     chmod 600 /etc/moodle_azure_files.credential
     
-    grep -q -s "^//$storageAccountName.file.core.windows.net/moodle\s\s*/moodle\s\s*cifs" /etc/fstab && _RET=$? || _RET=$?
+    grep -q -s "^//$storageAccountName.file.core.windows.net/moodle\s\s*/var/www//moodle\s\s*cifs" /etc/fstab && _RET=$? || _RET=$?
     if [ $_RET != "0" ]; then
-        echo -e "\n//$storageAccountName.file.core.windows.net/moodle   /moodle cifs    credentials=/etc/moodle_azure_files.credential,uid=www-data,gid=www-data,nofail,vers=3.0,dir_mode=0770,file_mode=0660,serverino,mfsymlinks" >> /etc/fstab
+        echo -e "\n//$storageAccountName.file.core.windows.net/moodle   /var/www/moodle cifs    credentials=/etc/moodle_azure_files.credential,uid=www-data,gid=www-data,nofail,vers=3.0,dir_mode=0770,file_mode=0660,serverino,mfsymlinks" >> /etc/fstab
     fi
-    mkdir -p /moodle
-    mount /moodle
+    mkdir -p /var/www/moodle
+    mount /var/www/moodle
 }
 
 function setup_moodle_mount_dependency_for_systemd_service
@@ -365,7 +365,7 @@ if [ -f "$SERVER_TIMESTAMP_FULLPATH" ]; then
     rsync -av --delete /var/www/moodle/docroot /var/www/html >> $SYNC_LOG_FULLPATH
   fi
 else
-  logger -p local2.notice -t moodle "Remote timestamp file ($SERVER_TIMESTAMP_FULLPATH) does not exist. Is /moodle mounted? Exiting with error."
+  logger -p local2.notice -t moodle "Remote timestamp file ($SERVER_TIMESTAMP_FULLPATH) does not exist. Is /var/www/moodle mounted? Exiting with error."
   exit 1
 fi
 EOF
@@ -380,7 +380,7 @@ EOF
   # Addition of a hook for custom script run on VMSS from shared mount to allow customised configuration of the VMSS as required
   local CRON_DESC_FULLPATH2="/etc/cron.d/update-vmss-config"
   cat <<EOF > ${CRON_DESC_FULLPATH2}
-* * * * * root [ -f /moodle/bin/update-vmss-config ] && /bin/bash /moodle/bin/update-vmss-config
+* * * * * root [ -f /var/www/moodle/bin/update-vmss-config ] && /bin/bash /var/www/moodle/bin/update-vmss-config
 EOF
   chmod 644 ${CRON_DESC_FULLPATH2}
 }
@@ -439,7 +439,7 @@ function get_moodle_unzip_dir_from_moodle_version {
 function create_redis_configuration_in_moodledata_muc_config_php
 {
     # create redis configuration in /moodle/moodledata/muc/config.php
-    cat <<EOF > /moodle/moodledata/muc/config.php
+    cat <<EOF > /var/www/moodle/moodledata/muc/config.php
 <?php defined('MOODLE_INTERNAL') || die();
  \$configuration = array (
   'siteidentifier' => '7a142be09ea65699e4a6f6ef91c0773c',

@@ -94,7 +94,7 @@ set -ex
     config_fail2ban
 
     # create gluster, nfs or Azure Files mount point
-    mkdir -p /moodle
+    mkdir -p /var/www/moodle
 
     export DEBIAN_FRONTEND=noninteractive
 
@@ -103,8 +103,8 @@ set -ex
         sudo add-apt-repository ppa:gluster/glusterfs-3.10 -y                 >> /tmp/apt1.log
     elif [ $fileServerType = "nfs" ]; then
         # configure NFS server and export
-        setup_raid_disk_and_filesystem /moodle /dev/md1 /dev/md1p1
-        configure_nfs_server_and_export /moodle
+        setup_raid_disk_and_filesystem /var/www/moodle /dev/md1 /dev/md1p1
+        configure_nfs_server_and_export /var/www/moodle
     fi
 
     sudo apt-get -y update                                                   >> /tmp/apt2.log
@@ -160,16 +160,16 @@ set -ex
 
     if [ $fileServerType = "gluster" ]; then
         # mount gluster files system
-        echo -e '\n\rInstalling GlusterFS on '$glusterNode':/'$glusterVolume '/moodle\n\r' 
+        echo -e '\n\rInstalling GlusterFS on '$glusterNode':/'$glusterVolume '/var/www/moodle\n\r'
         setup_and_mount_gluster_moodle_share $glusterNode $glusterVolume
     elif [ $fileServerType = "nfs-ha" ]; then
         # mount NFS-HA export
-        echo -e '\n\rMounting NFS export from '$nfsHaLbIP' on /moodle\n\r'
-        configure_nfs_client_and_mount $nfsHaLbIP $nfsHaExportPath /moodle
+        echo -e '\n\rMounting NFS export from '$nfsHaLbIP' on /var/www/moodle\n\r'
+        configure_nfs_client_and_mount $nfsHaLbIP $nfsHaExportPath /var/www/moodle
     elif [ $fileServerType = "nfs-byo" ]; then
         # mount NFS-BYO export
-        echo -e '\n\rMounting NFS export from '$nfsByoIpExportPath' on /moodle\n\r'
-        configure_nfs_client_and_mount0 $nfsByoIpExportPath /moodle
+        echo -e '\n\rMounting NFS export from '$nfsByoIpExportPath' on /var/www/moodle\n\r'
+        configure_nfs_client_and_mount0 $nfsByoIpExportPath /var/www/moodle
     fi
     
     # install pre-requisites
@@ -195,8 +195,8 @@ set -ex
 
     # Set up initial moodle dirs
     mkdir -p /var/www/moodle
-    mkdir -p /moodle/certs
-    mkdir -p /moodle/moodledata
+    mkdir -p /var/www/moodle/certs
+    mkdir -p /var/www/moodle/moodledata
 
     o365pluginVersion=$(get_o365plugin_version_from_moodle_version $moodleVersion)
     moodleStableVersion=$o365pluginVersion  # Need Moodle stable version for GDPR plugins, and o365pluginVersion is just Moodle stable version, so reuse it.
@@ -204,8 +204,8 @@ set -ex
 
     # install Moodle 
     echo '#!/bin/bash
-    mkdir -p /moodle/tmp
-    cd /moodle/tmp
+    mkdir -p /var/www/moodle/tmp
+    cd /var/www/moodle/tmp
 
     if [ ! -d /var/www/moodle/docroot ]; then
         # downloading moodle only if /var/www/moodle/docroot does not exist -- if it exists, user should populate it in advance correctly as below. This is to reduce template deployment time.
@@ -262,8 +262,8 @@ set -ex
         /usr/bin/unzip -q plugin-azurelibrary.zip
         /bin/mv moodle-local_azure_storage-master /var/www/moodle/docroot/local/azure_storage
     fi
-    cd /moodle
-    rm -rf /moodle/tmp
+    cd /var/www/moodle
+    rm -rf /var/www/moodle/tmp
     ' > /tmp/setup-moodle.sh 
 
     chmod 755 /tmp/setup-moodle.sh
@@ -397,8 +397,8 @@ server {
         index index.php index.html index.htm;
 
         ssl on;
-        ssl_certificate /moodle/certs/nginx.crt;
-        ssl_certificate_key /moodle/certs/nginx.key;
+        ssl_certificate /var/www/moodle/certs/nginx.crt;
+        ssl_certificate_key /var/www/moodle/certs/nginx.key;
 
         # Log to syslog
         error_log syslog:server=localhost,facility=local1,severity=error,tag=moodle;
@@ -429,18 +429,18 @@ EOF
         ### SSL cert ###
         if [ "$thumbprintSslCert" != "None" ]; then
             echo "Using VM's cert (/var/lib/waagent/$thumbprintSslCert.*) for SSL..."
-            cat /var/lib/waagent/$thumbprintSslCert.prv > /moodle/certs/nginx.key
-            cat /var/lib/waagent/$thumbprintSslCert.crt > /moodle/certs/nginx.crt
+            cat /var/lib/waagent/$thumbprintSslCert.prv > /var/www/moodle/certs/nginx.key
+            cat /var/lib/waagent/$thumbprintSslCert.crt > /var/www/moodle/certs/nginx.crt
             if [ "$thumbprintCaCert" != "None" ]; then
                 echo "CA cert was specified (/var/lib/waagent/$thumbprintCaCert.crt), so append it to nginx.crt..."
-                cat /var/lib/waagent/$thumbprintCaCert.crt >> /moodle/certs/nginx.crt
+                cat /var/lib/waagent/$thumbprintCaCert.crt >> /var/www/moodle/certs/nginx.crt
             fi
         else
             echo -e "Generating SSL self-signed certificate"
-            openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /moodle/certs/nginx.key -out /moodle/certs/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=$siteFQDN"
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /var/www/moodle/certs/nginx.key -out /var/www/moodle/certs/nginx.crt -subj "/C=US/ST=WA/L=Redmond/O=IT/CN=$siteFQDN"
         fi
-        chown www-data:www-data /moodle/certs/nginx.*
-        chmod 0400 /moodle/certs/nginx.*
+        chown www-data:www-data /var/www/moodle/certs/nginx.*
+        chmod 0400 /var/www/moodle/certs/nginx.*
     fi
 
    # php config 
@@ -776,8 +776,8 @@ EOF
         siteProtocol="https"
     fi
     if [ $dbServerType = "mysql" ]; then
-        echo -e "cd /tmp; /usr/bin/php /var/www/moodle/docroot/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot="$siteProtocol"://"$siteFQDN" --dataroot=/moodle/moodledata --dbhost="$mysqlIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=mysqli --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail=admin@"$siteFQDN" --non-interactive --agree-license --allow-unstable || true "
-        cd /tmp; /usr/bin/php /var/www/moodle/docroot/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=/moodle/moodledata --dbhost=$mysqlIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=mysqli --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
+        echo -e "cd /tmp; /usr/bin/php /var/www/moodle/docroot/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot="$siteProtocol"://"$siteFQDN" --dataroot=/var/www/moodle/moodledata --dbhost="$mysqlIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=mysqli --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail=admin@"$siteFQDN" --non-interactive --agree-license --allow-unstable || true "
+        cd /tmp; /usr/bin/php /var/www/moodle/docroot/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=/var/www/moodle/moodledata --dbhost=$mysqlIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=mysqli --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
 
         if [ "$installObjectFsSwitch" = "true" ]; then
             mysql -h $mysqlIP -u $mysqladminlogin -p${mysqladminpass} ${moodledbname} -e "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'enabletasks', 1);" 
@@ -787,7 +787,7 @@ EOF
             mysql -h $mysqlIP -u $mysqladminlogin -p${mysqladminpass} ${moodledbname} -e "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_sastoken', '${sas}');"
         fi
     elif [ $dbServerType = "mssql" ]; then
-        cd /tmp; /usr/bin/php /var/www/moodle/docroot/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=/moodle/moodledata --dbhost=$mssqlIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=sqlsrv --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
+        cd /tmp; /usr/bin/php /var/www/moodle/docroot/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=/var/www/moodle/moodledata --dbhost=$mssqlIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=sqlsrv --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
 
         if [ "$installObjectFsSwitch" = "true" ]; then
             /opt/mssql-tools/bin/sqlcmd -S $mssqlIP -U $mssqladminlogin -P ${mssqladminpass} -d ${moodledbname} -Q "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'enabletasks', 1)" 
@@ -797,8 +797,8 @@ EOF
             /opt/mssql-tools/bin/sqlcmd -S $mssqlIP -U $mssqladminlogin -P ${mssqladminpass} -d${moodledbname} -Q "INSERT INTO mdl_config_plugins (plugin, name, value) VALUES ('tool_objectfs', 'azure_sastoken', '${sas}')"
         fi
     else
-        echo -e "cd /tmp; /usr/bin/php /var/www/moodle/docroot/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot="$siteProtocol"://"$siteFQDN" --dataroot=/moodle/moodledata --dbhost="$postgresIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=pgsql --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail=admin@"$siteFQDN" --non-interactive --agree-license --allow-unstable || true "
-        cd /tmp; /usr/bin/php /var/www/moodle/docroot/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=/moodle/moodledata --dbhost=$postgresIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=pgsql --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
+        echo -e "cd /tmp; /usr/bin/php /var/www/moodle/docroot/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot="$siteProtocol"://"$siteFQDN" --dataroot=/var/www/moodle/moodledata --dbhost="$postgresIP" --dbname="$moodledbname" --dbuser="$azuremoodledbuser" --dbpass="$moodledbpass" --dbtype=pgsql --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass="$adminpass" --adminemail=admin@"$siteFQDN" --non-interactive --agree-license --allow-unstable || true "
+        cd /tmp; /usr/bin/php /var/www/moodle/docroot/admin/cli/install.php --chmod=770 --lang=en_us --wwwroot=$siteProtocol://$siteFQDN   --dataroot=/var/www/moodle/moodledata --dbhost=$postgresIP   --dbname=$moodledbname   --dbuser=$azuremoodledbuser   --dbpass=$moodledbpass   --dbtype=pgsql --fullname='Moodle LMS' --shortname='Moodle' --adminuser=admin --adminpass=$adminpass   --adminemail=admin@$siteFQDN   --non-interactive --agree-license --allow-unstable || true
 
         if [ "$installObjectFsSwitch" = "true" ]; then
             # Add the ObjectFS configuration to Moodle.
@@ -881,11 +881,11 @@ EOF
    # Set up cronned sql dump
    if [ "$dbServerType" = "mysql" ]; then
       cat <<EOF > /etc/cron.d/sql-backup
-22 02 * * * root /usr/bin/mysqldump -h $mysqlIP -u ${azuremoodledbuser} -p'${moodledbpass}' --databases ${moodledbname} | gzip > /moodle/db-backup.sql.gz
+22 02 * * * root /usr/bin/mysqldump -h $mysqlIP -u ${azuremoodledbuser} -p'${moodledbpass}' --databases ${moodledbname} | gzip > /var/www/moodle/db-backup.sql.gz
 EOF
    elif [ "$dbServerType" = "postgres" ]; then
       cat <<EOF > /etc/cron.d/sql-backup
-22 02 * * * root /usr/bin/pg_dump -Fc -h $postgresIP -U ${azuremoodledbuser} ${moodledbname} > /moodle/db-backup.sql
+22 02 * * * root /usr/bin/pg_dump -Fc -h $postgresIP -U ${azuremoodledbuser} ${moodledbname} > /var/www/moodle/db-backup.sql
 EOF
    #else # mssql. TODO It's missed earlier! Complete this!
    fi
@@ -906,29 +906,29 @@ EOF
 #       sudo find /var/www/moodle/docroot -type d -exec chmod 755 '{}' \;
 #    fi
     # But now we need to adjust the moodledata and the certs directory ownerships, and the permission for the generated config.php
-    sudo chown -R www-data.www-data /moodle/moodledata /moodle/certs
+    sudo chown -R www-data.www-data /var/www/moodle/moodledata /var/www/moodle/certs
     sudo chmod +r /var/www/moodle/docroot/config.php
 
-    # chmod /moodle for Azure NetApp Files (its default is 770!)
+    # chmod /var/www/moodle for Azure NetApp Files (its default is 770!)
     if [ $fileServerType = "nfs-byo" ]; then
-        sudo chmod +rx /moodle
+        sudo chmod +rx /var/www/moodle
     fi
 
    if [ $fileServerType = "azurefiles" ]; then
       # Delayed copy of moodle installation to the Azure Files share
 
       # First rename moodle directory to something else
-      mv /moodle /moodle_old_delete_me
+      mv /var/www/moodle /var/www/moodle_old_delete_me
       # Then create the moodle share
       echo -e '\n\rCreating an Azure Files share for moodle'
       create_azure_files_moodle_share $azureFilesStorageAccountName $azureFilesStorageAccountKey /tmp/wabs.log
       # Set up and mount Azure Files share. Must be done after nginx is installed because of www-data user/group
-      echo -e '\n\rSetting up and mounting Azure Files share on //'$azureFilesStorageAccountName'.file.core.windows.net/moodle on /moodle\n\r'
+      echo -e '\n\rSetting up and mounting Azure Files share on //'$azureFilesStorageAccountName'.file.core.windows.net/moodle on /var/www/moodle\n\r'
       setup_and_mount_azure_files_moodle_share $azureFilesStorageAccountName $azureFilesStorageAccountKey
       # Move the local installation over to the Azure Files
       echo -e '\n\rMoving locally installed moodle over to Azure Files'
-      cp -a /moodle_old_delete_me/* /moodle || true # Ignore case sensitive directory copy failure
-      # rm -rf /moodle_old_delete_me || true # Keep the files just in case
+      cp -a /var/www/moodle_old_delete_me/* /var/www/moodle || true # Ignore case sensitive directory copy failure
+      # rm -rf /var/www/moodle_old_delete_me || true # Keep the files just in case
    fi
 
    create_last_modified_time_update_script

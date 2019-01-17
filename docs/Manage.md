@@ -16,7 +16,7 @@ For convenience and readability this document also assumes that essential [deplo
 ## Updating Moodle code/settings
 
 Your controller Virtual Machine has Moodle code and data stored in
-`/moodle`. The site code is stored in `/var/www/moodle/docroot/`. This
+`/var/www/moodle`. The site code is stored in `/var/www/moodle/docroot/`. This
 data is replicated across dual gluster nodes to provide high
 availability. This directory is also mounted to your autoscaled
 frontends so all changes to files on the controller VM are immediately
@@ -34,10 +34,10 @@ roll back if needed.
 To connect to your Controller VM use SSH with a username of
 'azureuser' and the SSH provided in the `sshPublicKey` input
 parameter. For example, to retrieve a listing of files and directories
-in the `/moodle` directory use:
+in the `/var/www/moodle` directory use:
 
 ```
-ssh -o StrictHostKeyChecking=no azureadmin@$MOODLE_CONTROLLER_INSTANCE_IP ls -l /moodle
+ssh -o StrictHostKeyChecking=no azureadmin@$MOODLE_CONTROLLER_INSTANCE_IP ls -l /var/www/moodle
 ```
 
 Results:
@@ -92,11 +92,11 @@ Please do let us know on this Github repo's Issues if you encounter any problems
 ## Getting an SQL dump
 
 By default a daily sql dump of your database is taken at 02:22 and
-saved to `/moodle/db-backup.sql`(.gz). This file can be retrieved
+saved to `/var/www/moodle/db-backup.sql`(.gz). This file can be retrieved
 using SCP or similar. For example:
 
 ``` bash
-scp azureadmin@$MOODLE_CONTROLLER_INSTANCE_IP:/moodle/db-backup.sql /tmp/moodle-db-backup.sql
+scp azureadmin@$MOODLE_CONTROLLER_INSTANCE_IP:/var/www/moodle/db-backup.sql /tmp/moodle-db-backup.sql
 ```
 
 To obtain a more recent SQL dump you run the commands appropriate for
@@ -110,7 +110,7 @@ snapshot of the database via SSH. For example, use the following
 command:
 
 ``` bash
-ssh azureadmin@$MOODLE_CONTROLLER_INSTANCE_IP 'pg_dump -Fc -h $MOODLE_DATABASE_DNS -U $MOODLE_DATABASE_ADMIN_USERNAME moodle > /moodle/db-snapshot.sql'
+ssh azureadmin@$MOODLE_CONTROLLER_INSTANCE_IP 'pg_dump -Fc -h $MOODLE_DATABASE_DNS -U $MOODLE_DATABASE_ADMIN_USERNAME moodle > /var/www/moodle/db-snapshot.sql'
 ```
 
 See the Postgres documentation for full details of the [`pg_dump`](https://www.postgresql.org/docs/9.5/static/backup-dump.html) command.
@@ -122,7 +122,7 @@ snapshot of the database via SSH. For example, use the following
 command:
 
 ``` bash
-ssh azureadmin@$MOODLE_CONTROLLER_INSTANCE_IP 'mysqldump -h $mysqlIP -u ${azuremoodledbuser} -p'${moodledbpass}' --databases ${moodledbname} | gzip > /moodle/db-backup.sql.gz'
+ssh azureadmin@$MOODLE_CONTROLLER_INSTANCE_IP 'mysqldump -h $mysqlIP -u ${azuremoodledbuser} -p'${moodledbpass}' --databases ${moodledbname} | gzip > /var/www/moodle/db-backup.sql.gz'
 ```
 
 ## Backup and Recovery
@@ -170,8 +170,8 @@ basic testing, but a public website will want a real cert. After
 purchasing a trusted certificate, it can be copied to the following
 files to be ready immediately:
 
-  - /moodle/certs/nginx.key: Your certificate's private key
-  - /moodle/certs/nginx.crt: Your combined signed certificate and trust chain certificate(s).
+  - /var/www/moodle/certs/nginx.key: Your certificate's private key
+  - /var/www/moodle/certs/nginx.crt: Your combined signed certificate and trust chain certificate(s).
 
 ## Managing Azure DDoS protection
 

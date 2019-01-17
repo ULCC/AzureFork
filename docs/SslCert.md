@@ -68,5 +68,5 @@ HTTPS server will use this certificate and private key.
 Another important benefit of using Azure Key Vault is to handle certificate expiration/rotation automatically.
 Unfortunately, the current implementation doesn't support the auto-rotation. So when it becomes near your SSL
 certificate's expiry, you'll need to manually update the deployed certificate and private key files
-(it's in `/moodle/certs/nginx.{crt,key}` on the controller VM) and restart all the web frontend VM instances.
+(it's in `/var/www/moodle/certs/nginx.{crt,key}` on the controller VM) and restart all the web frontend VM instances.
 We'll improve our implementation to support auto-rotation in the future.

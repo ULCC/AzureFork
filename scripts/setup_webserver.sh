@@ -90,24 +90,24 @@ check_fileServerType_param $fileServerType
   PhpVer=$(get_php_version)
 
   if [ $fileServerType = "gluster" ]; then
-    # Mount gluster fs for /moodle
-    sudo mkdir -p /moodle
-    sudo chown www-data /moodle
-    sudo chmod 770 /moodle
+    # Mount gluster fs for /var/www/moodle
+    sudo mkdir -p /var/www/moodle
+    sudo chown www-data /var/www/moodle
+    sudo chmod 770 /var/www/moodle
     sudo echo -e 'Adding Gluster FS to /etc/fstab and mounting it'
     setup_and_mount_gluster_moodle_share $glusterNode $glusterVolume
   elif [ $fileServerType = "nfs" ]; then
     # mount NFS export (set up on controller VM--No HA)
-    echo -e '\n\rMounting NFS export from '$nfsVmName':/moodle on /moodle and adding it to /etc/fstab\n\r'
-    configure_nfs_client_and_mount $nfsVmName /moodle /moodle
+    echo -e '\n\rMounting NFS export from '$nfsVmName':/var/www/moodle on /var/www/moodle and adding it to /etc/fstab\n\r'
+    configure_nfs_client_and_mount $nfsVmName /var/www/moodle /var/www/moodle
   elif [ $fileServerType = "nfs-ha" ]; then
     # mount NFS-HA export
-    echo -e '\n\rMounting NFS export from '$nfsHaLbIP':'$nfsHaExportPath' on /moodle and adding it to /etc/fstab\n\r'
-    configure_nfs_client_and_mount $nfsHaLbIP $nfsHaExportPath /moodle
+    echo -e '\n\rMounting NFS export from '$nfsHaLbIP':'$nfsHaExportPath' on /var/www/moodle and adding it to /etc/fstab\n\r'
+    configure_nfs_client_and_mount $nfsHaLbIP $nfsHaExportPath /var/www/moodle
   elif [ $fileServerType = "nfs-byo" ]; then
     # mount NFS-BYO export
-    echo -e '\n\rMounting NFS export from '$nfsByoIpExportPath' on /moodle and adding it to /etc/fstab\n\r'
-    configure_nfs_client_and_mount0 $nfsByoIpExportPath /moodle
+    echo -e '\n\rMounting NFS export from '$nfsByoIpExportPath' on /var/www/moodle and adding it to /etc/fstab\n\r'
+    configure_nfs_client_and_mount0 $nfsByoIpExportPath /var/www/moodle
   else # "azurefiles"
     setup_and_mount_azure_files_moodle_share $azureFilesStorageAccountName $azureFilesStorageAccountKey
   fi
@@ -207,8 +207,8 @@ server {
 	index index.php index.html index.htm;
 
         ssl on;
-        ssl_certificate /moodle/certs/nginx.crt;
-        ssl_certificate_key /moodle/certs/nginx.key;
+        ssl_certificate /var/www/moodle/certs/nginx.crt;
+        ssl_certificate_key /var/www/moodle/certs/nginx.key;
 
         # Log to syslog
         error_log syslog:server=localhost,facility=local1,severity=error,tag=moodle;
@@ -366,7 +366,7 @@ EOF
    fi
 
    if [ "$webServerType" = "nginx" -o "$httpsTermination" = "VMSS" ]; then
-     # update startup script to wait for certificate in /moodle mount
+     # update startup script to wait for certificate in /var/www/moodle mount
      setup_moodle_mount_dependency_for_systemd_service nginx || exit 1
      # restart Nginx
      sudo service nginx restart 
