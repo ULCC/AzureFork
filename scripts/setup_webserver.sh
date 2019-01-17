@@ -651,5 +651,5 @@ EOF
   systemctl daemon-reload
   service varnish restart
 
-  echo 'Hello!'
+  ln -s /var/www/ /www
 }  > /tmp/setup.log
