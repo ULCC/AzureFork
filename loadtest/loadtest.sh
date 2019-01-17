@@ -133,7 +133,7 @@ function install_moosh
     # ln -s $PWD/moosh.php ~/bin/moosh
 }
 
-MOODLE_PATH=/moodle/html/moodle
+MOODLE_PATH=/var/www/moodle/docroot
 
 function delete_course
 {

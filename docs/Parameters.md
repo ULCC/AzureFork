@@ -124,7 +124,7 @@ Default: false
 
 ### htmlLocalCopySwitch
 
-Switch to create a local copy of /moodle/html or not
+Switch to create a local copy of /var/www/moodle or not
 
 Type: bool
 

@@ -190,10 +190,10 @@ EOF
   fi # if [ "$webServerType" = "nginx" -o "$httpsTermination" = "VMSS" ];
 
   # Set up html dir local copy if specified
-  htmlRootDir="/moodle/html/moodle"
+  htmlRootDir="/var/www/moodle/docroot"
   if [ "$htmlLocalCopySwitch" = "true" ]; then
     mkdir -p /var/www/html
-    rsync -av --delete /moodle/html/moodle /var/www/html
+    rsync -av --delete /var/www/moodle/docroot /var/www/html
     htmlRootDir="/var/www/html/moodle"
     setup_html_local_copy_cron_job
   fi

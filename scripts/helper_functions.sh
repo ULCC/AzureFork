@@ -327,10 +327,10 @@ function configure_nfs_client_and_mount {
     configure_nfs_client_and_mount0 "${NFS_SERVER}:${NFS_DIR}" ${MOUNTPOINT}
 }
 
-SERVER_TIMESTAMP_FULLPATH="/moodle/html/moodle/.last_modified_time.moodle_on_azure"
+SERVER_TIMESTAMP_FULLPATH="/var/www/moodle/docroot/.last_modified_time.moodle_on_azure"
 LOCAL_TIMESTAMP_FULLPATH="/var/www/html/moodle/.last_modified_time.moodle_on_azure"
 
-# Create a script to sync /moodle/html/moodle (gluster/NFS) and /var/www/html/moodle (local) and set up a minutely cron job
+# Create a script to sync /var/www/moodle/docroot (gluster/NFS) and /var/www/html/moodle (local) and set up a minutely cron job
 # Should be called by root and only on a VMSS web frontend VM
 function setup_html_local_copy_cron_job {
   if [ "$(whoami)" != "root" ]; then
@@ -362,7 +362,7 @@ if [ -f "$SERVER_TIMESTAMP_FULLPATH" ]; then
       truncate -s 0 $SYNC_LOG_FULLPATH
     fi
     echo \$(date +%Y%m%d%H%M%S) >> $SYNC_LOG_FULLPATH
-    rsync -av --delete /moodle/html/moodle /var/www/html >> $SYNC_LOG_FULLPATH
+    rsync -av --delete /var/www/moodle/docroot /var/www/html >> $SYNC_LOG_FULLPATH
   fi
 else
   logger -p local2.notice -t moodle "Remote timestamp file ($SERVER_TIMESTAMP_FULLPATH) does not exist. Is /moodle mounted? Exiting with error."
@@ -387,9 +387,9 @@ EOF
 
 LAST_MODIFIED_TIME_UPDATE_SCRIPT_FULLPATH="/usr/local/bin/update_last_modified_time.moodle_on_azure.sh"
 
-# Create a script to modify the last modified timestamp file (/moodle/html/moodle/last_modified_time.moodle_on_azure)
+# Create a script to modify the last modified timestamp file (/var/www/moodle/docroot/last_modified_time.moodle_on_azure)
 # Should be called by root and only on the controller VM.
-# The moodle admin should run the generated script everytime the /moodle/html/moodle directory content is updated (e.g., moodle upgrade, config change or plugin install/upgrade)
+# The moodle admin should run the generated script everytime the /var/www/moodle/docroot directory content is updated (e.g., moodle upgrade, config change or plugin install/upgrade)
 function create_last_modified_time_update_script {
   if [ "$(whoami)" != "root" ]; then
     echo "${0}: Must be run as root!"

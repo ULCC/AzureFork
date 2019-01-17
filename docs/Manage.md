@@ -16,7 +16,7 @@ For convenience and readability this document also assumes that essential [deplo
 ## Updating Moodle code/settings
 
 Your controller Virtual Machine has Moodle code and data stored in
-`/moodle`. The site code is stored in `/moodle/html/moodle/`. This
+`/moodle`. The site code is stored in `/var/www/moodle/docroot/`. This
 data is replicated across dual gluster nodes to provide high
 availability. This directory is also mounted to your autoscaled
 frontends so all changes to files on the controller VM are immediately
@@ -28,7 +28,7 @@ HTML directory's permission is read-only for the web frontend VMs (thus any web-
 Moodle code updates will fail).
 
 Depending on how large your Gluster disks are sized, it may be helpful
-to keep multiple older versions (/moodle/html1, /moodle/html2, etc) to
+to keep multiple older versions (/var/www/moodle1, /var/www/moodle2, etc) to
 roll back if needed.
 
 To connect to your Controller VM use SSH with a username of
@@ -65,13 +65,13 @@ Q&A](https://superuser.com/questions/421074/ssh-the-authenticity-of-host-host-ca
 
 ### If you set `htmlLocalCopySwitch` to true (this is the default now)
 
-Originally the `/moodle/html` directory was shared across all autoscaled
+Originally the `/var/www/moodle` directory was shared across all autoscaled
 web VMs through the specified file server (Gluster or NFS), and this is
 not good for web response time. Therefore, we introduced the
-`htmlLocalCopySwitch` that'll copy the `/moodle/html` directory to
+`htmlLocalCopySwitch` that'll copy the `/var/www/moodle` directory to
 `/var/www/html` in each autoscaled web VM and reconfigures the web
 server (apache/nginx)'s server root directory accordingly, when it's set
-to true. This now requires directory sync between `/moodle/html` and
+to true. This now requires directory sync between `/var/www/moodle` and
 `/var/www/html`, and currently it's addressed by simple polling
 (minutely). Therefore, if you are going to update your Moodle
 code/settings with the switch set to true, please follow the
@@ -151,11 +151,11 @@ a different size database you'll need to:
   2. Perform an SQL dump of your database. See above for more details.
   3. Create a new Azure database of the size you want inside your
      existing resource group.
-  4. Using the details in your /moodle/html/moodle/config.php create a
+  4. Using the details in your /var/www/moodle/docroot/config.php create a
      new user and database matching the details in config.php. Make
      sure to grant all rights on the db to the user.
   5. On the controller instance, change the db setting in
-     /moodle/html/moodle/config.php to point to the new database.
+     /var/www/moodle/docroot/config.php to point to the new database.
   6. Take Moodle site out of maintenance mode.
   7. Once confirmed working, delete the previous database instance.
 
