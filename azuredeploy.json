@@ -66,7 +66,7 @@
             "type": "bool"
         },
         "htmlLocalCopySwitch": {
-            "defaultValue": true,
+            "defaultValue": false,
             "metadata": {
                 "description": "Switch to create a local copy of /var/www/moodle or not"
             },
