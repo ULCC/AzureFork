@@ -106,7 +106,7 @@
             "type": "string"
         },
         "siteURL": {
-            "defaultValue": "www.example.org",
+            "defaultValue": "",
             "metadata": {
                 "description": "URL for Moodle site"
             },
@@ -146,7 +146,7 @@
             "type": "string"
         },
         "controllerVmSku": {
-            "defaultValue": "Standard_DS1_v2",
+            "defaultValue": "Standard_DS3_v2",
             "metadata": {
                 "description": "VM size for the controller VM"
             },
