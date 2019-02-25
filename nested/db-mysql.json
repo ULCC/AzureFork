@@ -71,35 +71,7 @@
                         "endIpAddress": "[parameters('ctlrPubIp')]"
                     },
                     "type": "firewallRules"
-                },
-                {
-                    "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/servers/', parameters('moodleCommon').serverName)]"
-                    ],
-
-                    "comments": "Generalized from resource: '/subscriptions/2720e66e-c13c-40ef-a383-150d407b4271/resourceGroups/temp/providers/Microsoft.DBforMySQL/servers/bigdavy/configurations/innodb_file_format'.",
-                    "type": "Microsoft.DBforMySQL/servers/configurations",
-                    "name": "[concat(parameters('serverName'), '/', parameters('configurations_innodb_file_format_name'))]",
-                    "apiVersion": "2017-12-01-preview",
-                    "scale": null,
-                    "properties": {
-                        "value": "Barracuda",
-                        "source": "system-default"
-                    }
-                },
-                {
-                    "dependsOn": [
-                        "[concat('Microsoft.DBforMySQL/servers/', parameters('moodleCommon').serverName)]"
-                    ],
-                    "type": "Microsoft.DBforMySQL/servers/configurations",
-                    "name": "[concat(parameters('serverName'), '/', parameters('configurations_innodb_file_per_table'))]",
-                    "apiVersion": "2017-12-01-preview",
-                    "scale": null,
-                    "properties": {
-                        "value": "1",
-                        "source": "system-default"
-                    }
-                },
+                }
             ]
         }
     ],

@@ -1788,6 +1788,7 @@ enabled  = false
 filter   = mysqld-auth
 port     = 3306
 logpath  = /var/log/mysqld.log
+innodb_file_per_table = ON
 
 
 # DNS Servers
