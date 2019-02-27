@@ -71,7 +71,20 @@
                         "endIpAddress": "[parameters('ctlrPubIp')]"
                     },
                     "type": "firewallRules"
-                }
+                } ,
+                {
+                    "type": "Microsoft.DBforMySQL/servers/configurations",
+                    "name": "[concat('Microsoft.DBforMySQL/servers/', parameters('moodleCommon').serverName), '/', parameters('configurations_innodb_file_per_table_name'))]",
+                    "apiVersion": "2017-12-01-preview",
+                    "scale": null,
+                    "properties": {
+                        "value": "ON",
+                        "source": "user-override"
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.DBforMySQL/servers/', parameters('moodleCommon').serverName)]"
+                    ]
+                },
             ]
         }
     ],
