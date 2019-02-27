@@ -84,7 +84,7 @@
                     "dependsOn": [
                         "[concat('Microsoft.DBforMySQL/servers/', parameters('moodleCommon').serverName)]"
                     ]
-                },
+                }
             ]
         }
     ],
