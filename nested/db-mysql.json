@@ -77,7 +77,7 @@
                     "type": "firewallRules"
                 } ,
                 {
-                    "type": "Microsoft.DBforMySQL/servers/configurations",
+                    "type": "configurations",
                     "name": "innodb_file_per_table",
                     "apiVersion": "2017-12-01-preview",
                     "scale": null,
