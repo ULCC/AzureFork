@@ -24,10 +24,6 @@
             "defaultValue": "innodb_file_per_table",
             "type": "String"
         },
-        "databases_information_schema_name": {
-            "defaultValue": "information_schema",
-            "type": "Object"
-        },
         "configurations_character_set_server_name": {
             "defaultValue": "character_set_server",
             "type": "String"
