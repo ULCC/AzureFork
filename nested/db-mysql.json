@@ -26,7 +26,7 @@
         },
         "databases_information_schema_name": {
             "defaultValue": "information_schema",
-            "type": "String"
+            "type": "Object"
         },
         "configurations_character_set_server_name": {
             "defaultValue": "character_set_server",
@@ -111,7 +111,6 @@
                     ]
                 },
                 {
-                    "comments": "Generalized from resource: '/subscriptions/2720e66e-c13c-40ef-a383-150d407b4271/resourceGroups/twwtest/providers/Microsoft.DBforMySQL/servers/mysql-zuxjx6/databases/information_schema'.",
                     "type": "databases",
                     "name": "information_schema",
                     "apiVersion": "2017-12-01-preview",
