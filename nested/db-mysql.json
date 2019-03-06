@@ -26,7 +26,7 @@
         },
         "configurations_database_information_schema_name": {
             "defaultValue": "databases_information_schema",
-            "type": "String"
+            "type": "object"
         },
         "configurations_character_set_server_name": {
             "defaultValue": "character_set_server",
