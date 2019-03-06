@@ -24,7 +24,7 @@
             "defaultValue": "innodb_file_per_table",
             "type": "String"
         },
-        "configurations_database_information_schema_name": {
+        "configurations_databases_information_schema_name": {
             "defaultValue": "databases_information_schema",
             "type": "object"
         },
