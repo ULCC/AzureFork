@@ -23,6 +23,14 @@
         "configurations_innodb_file_per_table_name": {
             "defaultValue": "innodb_file_per_table",
             "type": "String"
+        },
+        "configurations_database_information_schema_name": {
+            "defaultValue": "databases_information_schema",
+            "type": "String"
+        },
+        "configurations_character_set_server_name": {
+            "defaultValue": "character_set_server",
+            "type": "String"
         }
     },
     "resources": [
@@ -87,6 +95,33 @@
                     },
                     "dependsOn": [
                         "[concat('Microsoft.DBforMySQL/servers/', parameters('moodleCommon').serverName)]"
+                    ]
+                },
+                {
+                    "type": "configurations",
+                    "name": "character_set_server",
+                    "apiVersion": "2017-12-01-preview",
+                    "scale": null,
+                    "properties": {
+                        "value": "UTF8MB4",
+                        "source": "user-override"
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.DBforMySQL/servers/', parameters('moodleCommon').serverName)]"
+                    ]
+                },
+                {
+                    "comments": "Generalized from resource: '/subscriptions/2720e66e-c13c-40ef-a383-150d407b4271/resourceGroups/twwtest/providers/Microsoft.DBforMySQL/servers/mysql-zuxjx6/databases/information_schema'.",
+                    "type": "configurations",
+                    "name": "information_schema",
+                    "apiVersion": "2017-12-01-preview",
+                    "scale": null,
+                    "properties": {
+                        "charset": "utf8mb4",
+                        "collation": "utf8mb4_unicode_ci"
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.DBforMySQL/servers', parameters('moodleCommon').serverName)]"
                     ]
                 }
             ]
