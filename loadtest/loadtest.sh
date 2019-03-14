@@ -7,7 +7,7 @@ function install_java_and_jmeter
     sudo apt install -y openjdk-8-jdk || return 1
 
     wget -O apache-jmeter-5.1.tgz http://mirrors.ukfast.co.uk/sites/ftp.apache.org//jmeter/binaries/apache-jmeter-5.1.tgz || return 1
-    tar xzf apache-jmeter-5.1.tgz ~
+    tar xzf apache-jmeter-5.1.tgz
 
     mkdir -p ~/bin
     ln -s ~/apache-jmeter-5.1/bin/jmeter ~/bin/jmeter
