@@ -6,39 +6,48 @@ function install_java_and_jmeter
     sudo apt update || return 1
     sudo apt install -y openjdk-8-jdk || return 1
 
-    wget -O apache-jmeter-4.0.tgz http://www-us.apache.org/dist/jmeter/binaries/apache-jmeter-4.0.tgz || return 1
-    tar xfz apache-jmeter-4.0.tgz -C ~
+    wget -O apache-jmeter-5.1.tgz http://mirrors.ukfast.co.uk/sites/ftp.apache.org//jmeter/binaries/apache-jmeter-5.1.tgz || return 1
+    tar xzf apache-jmeter-5.1.tgz ~
+
     mkdir -p ~/bin
-    ln -s ~/apache-jmeter-4.0/bin/jmeter ~/bin/jmeter
-    rm apache-jmeter-4.0.tgz
+    ln -s ~/apache-jmeter-5.1/bin/jmeter ~/bin/jmeter
+
+    rm apache-jmeter-5.1.tgz
 
     wget -O mysql-connector-java-5.1.45.tar.gz https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.45.tar.gz || return 1
     tar xfz mysql-connector-java-5.1.45.tar.gz
-    mv mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar ~/apache-jmeter-4.0/lib
+    mv mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar ~/apache-jmeter-5.1/lib
     rm -rf mysql-connector-java-5.1.45*
 
     wget -O postgres-42.2.1.jar https://jdbc.postgresql.org/download/postgresql-42.2.1.jar || return 1
-    mv postgres-42.2.1.jar ~/apache-jmeter-4.0/lib
+    mv postgres-42.2.1.jar ~/apache-jmeter-5.1/lib
 
     # Have to have jmeter plugins manager and have it download the needed plugins in advance...
     wget -O jmeter-plugins-manager-0.19.jar http://search.maven.org/remotecontent?filepath=kg/apc/jmeter-plugins-manager/0.19/jmeter-plugins-manager-0.19.jar || return 1
-    mv jmeter-plugins-manager-0.19.jar ~/apache-jmeter-4.0/lib/ext
+    mv jmeter-plugins-manager-0.19.jar ~/apache-jmeter-5.1/lib/ext
 
     wget -O cmdrunner-2.0.jar http://search.maven.org/remotecontent?filepath=kg/apc/cmdrunner/2.0/cmdrunner-2.0.jar || return 1
-    mv cmdrunner-2.0.jar ~/apache-jmeter-4.0/lib
-    java -cp ~/apache-jmeter-4.0/lib/ext/jmeter-plugins-manager-0.19.jar org.jmeterplugins.repository.PluginManagerCMDInstaller
+    mv cmdrunner-2.0.jar ~/apache-jmeter-5.1/lib
+    java -cp ~/apache-jmeter-5.1/lib/ext/jmeter-plugins-manager-0.19.jar org.jmeterplugins.repository.PluginManagerCMDInstaller
     # TODO Hard-coded .jmx file here. Do this for each individual .jmx file
-    wget -O tmp-for-plugin-install.jmx https://raw.githubusercontent.com/ULCC/AzureFork/master/loadtest/simple-test-1.jmx || return 1
-    ~/apache-jmeter-4.0/bin/PluginsManagerCMD.sh install-for-jmx tmp-for-plugin-install.jmx
+    wget -O tmp-for-plugin-install.jmx https://raw.githubusercontent.com/ULCC/AzureFork/pathnames/loadtest/simple-test-1.jmx || return 1
+    /usr/share/jmeter/bin/PluginsManagerCMD.sh install-for-jmx tmp-for-plugin-install.jmx
     rm tmp-for-plugin-install.jmx
 }
 
 function install_az_cli
 {
     local az_repo=$(lsb_release -cs)
-    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $az_repo main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
-    sudo apt-key adv --keyserver packages.microsoft.com --recv-keys 52E16F86FEE04B979B07E28DB02C46DF417A0893
-    sudo apt-get install -y apt-transport-https || return 1
+    sudo apt-get install apt-transport-https lsb-release software-properties-common dirmngr -y || return 1
+
+    AZ_REPO=$(lsb_release -cs)
+    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
+        sudo tee /etc/apt/sources.list.d/azure-cli.list
+
+    sudo apt-key --keyring /etc/apt/trusted.gpg.d/Microsoft.gpg adv \
+         --keyserver packages.microsoft.com \
+         --recv-keys BC528686B50D79E339D3721CEB3E94ADBE1229CF
+
     sudo apt-get update && sudo apt-get install -y azure-cli || return 1
 }
 
@@ -101,7 +110,7 @@ function deploy_moodle_with_some_parameters
     eval $cmd || return 1
 
     local deployment_name="${resource_group}-deployment"
-    local cmd="az group deployment create --resource-group $resource_group --name $deployment_name $no_wait_flag --template-uri $template_url --parameters @$parameters_template_file webServerType=$web_server_type autoscaleVmSku=$web_vm_sku dbServerType=$db_server_type mysqlPgresVcores=$db_vcores mysqlPgresStgSizeGB=$db_size_gb fileServerType=$file_server_type fileServerDiskCount=$file_server_disk_count fileServerDiskSize=$file_server_disk_size redisDeploySwitch=$redis_cache sshPublicKey='$ssh_pub_key'"
+    local cmd="az group deployment create --resource-group $resource_group --name $deployment_name $no_wait_flag --template-uri $template_url --parameters $parameters_template_file webServerType='$web_server_type' autoscaleVmSku='$web_vm_sku' dbServerType='$db_server_type' mysqlPgresVcores='$db_vcores' mysqlPgresStgSizeGB='$db_size_gb' fileServerType='$file_server_type' fileServerDiskCount='$file_server_disk_count' fileServerDiskSize='$file_server_disk_size' redisDeploySwitch='$redis_cache' sshPublicKey='$ssh_pub_key'"
     show_command_to_run $cmd
     eval $cmd
 }
@@ -193,7 +202,7 @@ function hide_course_overview_block_for_jmeter_test
 }
 
 # TODO hard-coded values...
-LOADTEST_BASE_URI=https://raw.githubusercontent.com/ULCC/AzureFork/master/loadtest
+LOADTEST_BASE_URI=https://raw.githubusercontent.com/ULCC/AzureFork/pathnames/loadtest
 MOODLE_TEST_USER_PASSWORD='testUserP@$$w0rd'
 
 function setup_test_course_and_users
@@ -213,7 +222,7 @@ function run_cmd_on_remote_host
     local ssh_dest=${2}   # E.g., azureadmin@10.2.3.4
     local port=${3:-22}   # E.g., 2222
 
-    local cmd="ssh -o 'StrictHostKeyChecking no' -p $port $ssh_dest 'wget $LOADTEST_BASE_URI/loadtest.sh -O loadtest.sh; source loadtest.sh; $func_cmd'"
+    local cmd="ssh -o 'StrictHostKeyChecking no' -p $port $ssh_dest 'wget $LOADTEST_BASE_URI/loadtest.sh -O loadtest.sh; export MOODLE_PATH='$MOODLE_PATH' source loadtest.sh; $func_cmd'"
     show_command_to_run $cmd
     eval $cmd
 }
@@ -271,6 +280,8 @@ function deallocate_services_in_resource_group
     # Stopping DBs and redis cache is currently not possible on Azure.
 }
 
+deploy_run_test1_teardown ltestinstance northeurope https://raw.githubusercontent.com/ULCC/AzureFork/pathnames/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
+
 function deploy_run_test1_teardown
 {
     local resource_group=${1}
@@ -315,12 +326,14 @@ function run_load_test_example
 {
     check_ssh_agent_and_added_key || return 1
 
-    deploy_run_test1_teardown ltest6 southcentralus https://raw.githubusercontent.com/ULCC/AzureFork/master/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
+    deploy_run_test1_teardown ltestinstance northeurope https://raw.githubusercontent.com/ULCC/AzureFork/pathnames/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
+
+#   deploy_run_test1_teardown ltest6 southcentralus https://raw.githubusercontent.com/ULCC/AzureFork/pathnames/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
 }
 
 function run_load_test_postgres
 {
     check_ssh_agent_and_added_key || return 1
 
-    deploy_run_test1_teardown pgres southcentralus https://raw.githubusercontent.com/ULCC/AzureFork/master/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 postgres 16 256 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 800 2400 36000
+    deploy_run_test1_teardown pgres southcentralus https://raw.githubusercontent.com/ULCC/AzureFork/pathnames/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 postgres 16 256 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 800 2400 36000
 }
