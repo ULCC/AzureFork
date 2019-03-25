@@ -30,7 +30,7 @@ function install_java_and_jmeter
     mv cmdrunner-2.0.jar ~/apache-jmeter-5.1/lib
     java -cp ~/apache-jmeter-5.1/lib/ext/jmeter-plugins-manager-0.19.jar org.jmeterplugins.repository.PluginManagerCMDInstaller
     # TODO Hard-coded .jmx file here. Do this for each individual .jmx file
-    wget -O tmp-for-plugin-install.jmx https://raw.githubusercontent.com/ULCC/AzureFork/pathnames/loadtest/simple-test-1.jmx || return 1
+    wget -O tmp-for-plugin-install.jmx https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/loadtest/simple-test-1.jmx || return 1
     /usr/share/jmeter/bin/PluginsManagerCMD.sh install-for-jmx tmp-for-plugin-install.jmx
     rm tmp-for-plugin-install.jmx
 }
@@ -202,7 +202,7 @@ function hide_course_overview_block_for_jmeter_test
 }
 
 # TODO hard-coded values...
-LOADTEST_BASE_URI=https://raw.githubusercontent.com/ULCC/AzureFork/pathnames/loadtest
+LOADTEST_BASE_URI=https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/loadtest
 MOODLE_TEST_USER_PASSWORD='testUserP@$$w0rd'
 
 function setup_test_course_and_users
@@ -280,7 +280,7 @@ function deallocate_services_in_resource_group
     # Stopping DBs and redis cache is currently not possible on Azure.
 }
 
-deploy_run_test1_teardown ltestinstance northeurope https://raw.githubusercontent.com/ULCC/AzureFork/pathnames/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
+deploy_run_test1_teardown ltestinstance northeurope https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
 
 function deploy_run_test1_teardown
 {
@@ -326,14 +326,14 @@ function run_load_test_example
 {
     check_ssh_agent_and_added_key || return 1
 
-    deploy_run_test1_teardown ltestinstance northeurope https://raw.githubusercontent.com/ULCC/AzureFork/pathnames/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
+    deploy_run_test1_teardown ltestinstance northeurope https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
 
-#   deploy_run_test1_teardown ltest6 southcentralus https://raw.githubusercontent.com/ULCC/AzureFork/pathnames/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
+#   deploy_run_test1_teardown ltest6 southcentralus https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
 }
 
 function run_load_test_postgres
 {
     check_ssh_agent_and_added_key || return 1
 
-    deploy_run_test1_teardown pgres southcentralus https://raw.githubusercontent.com/ULCC/AzureFork/pathnames/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 postgres 16 256 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 800 2400 36000
+    deploy_run_test1_teardown pgres southcentralus https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 postgres 16 256 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 800 2400 36000
 }
