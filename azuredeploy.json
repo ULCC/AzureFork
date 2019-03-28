@@ -146,7 +146,7 @@
             "type": "string"
         },
         "controllerVmSku": {
-            "defaultValue": "Standard_DS3_v2",
+            "defaultValue": "Standard_DS2_v2",
             "metadata": {
                 "description": "VM size for the controller VM"
             },
