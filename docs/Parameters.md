@@ -31,7 +31,7 @@ Type: string
 
 Possible Values: null
 
-Default: https://raw.githubusercontent.com/ULCC/AzureFork/master/
+Default: https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/
 
 
 ### _artifactsLocationSasToken
