@@ -31,15 +31,33 @@
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
-                    "_artifactsLocation":           { "value": "[parameters('_artifactsLocation')]" },
-                    "_artifactsLocationSasToken":   { "value": "[parameters('_artifactsLocationSasToken')]" },
-                    "redisDeploySwitch":            { "value": false },
-                    "sshPublicKey":                 { "value": "[parameters('sshPublicKey')]" },
-                    "autoscaleVmSku":               { "value": "Standard_DS1_v2" },
-                    "enableAccelNwForOtherVmsSwitch":   { "value": false },
-                    "dbServerType":                 { "value": "mysql" },
-                    "fileServerDiskCount":          { "value": 2 },
-                    "fileServerDiskSize":           { "value": 32 }
+                    "_artifactsLocation": {
+                        "value": "[parameters('_artifactsLocation')]"
+                    },
+                    "_artifactsLocationSasToken": {
+                        "value": "[parameters('_artifactsLocationSasToken')]"
+                    },
+                    "redisDeploySwitch": {
+                        "value": false
+                    },
+                    "sshPublicKey": {
+                        "value": "[parameters('sshPublicKey')]"
+                    },
+                    "autoscaleVmSku": {
+                        "value": "Standard_DS1_v2"
+                    },
+                    "enableAccelNwForOtherVmsSwitch": {
+                        "value": false
+                    },
+                    "dbServerType": {
+                        "value": "mysql"
+                    },
+                    "fileServerDiskCount": {
+                        "value": 2
+                    },
+                    "fileServerDiskSize": {
+                        "value": 32
+                    }
                 },
                 "templateLink": {
                     "uri": "[concat(parameters('_artifactsLocation'), 'azuredeploy.json', parameters('_artifactsLocationSasToken'))]"
@@ -48,9 +66,49 @@
         }
     ],
     "outputs": {
-        "mainTemplateOutputs": {
-            "type": "object",
-            "value": "[reference('mainTemplate').outputs]"
+        "siteURL": {
+            "type": "string",
+            "value": "[variables('moodleCommon').siteURL]"
+        },
+        "controllerInstanceIP": {
+            "type": "string",
+            "value": "[reference('controllerTemplate').outputs.controllerIP.value]"
+        },
+        "databaseDNS": {
+            "type": "string",
+            "value": "[reference('dbTemplate').outputs.dbFQDN.value]"
+        },
+        "databaseAdminUsername": {
+            "type": "string",
+            "value": "[variables('moodleCommon').dbUsername]"
+        },
+        "databaseAdminPassword": {
+            "type": "string",
+            "value": "[variables('moodleCommon').dbLoginPassword]"
+        },
+        "firstFrontendVmIP": {
+            "type": "string",
+            "value": "[reference('scaleSetTemplate').outputs.webvm1IP.value]"
+        },
+        "moodleAdminPassword": {
+            "type": "string",
+            "value": "[variables('moodleCommon').moodleAdminPass]"
+        },
+        "moodleDbUsername": {
+            "type": "string",
+            "value": "[variables('moodleCommon').moodleDbUserAzure]"
+        },
+        "moodleDbPassword": {
+            "type": "string",
+            "value": "[variables('moodleCommon').moodleDbPass]"
+        },
+        "loadBalancerDNS": {
+            "type": "string",
+            "value": "[variables('moodleCommon').lbDns]"
+        },
+        "loadBalancerSku": {
+            "type": "string",
+            "value": "[variables('moodleCommon').lbSku]"
         }
     },
     "variables": {
