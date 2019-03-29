@@ -128,18 +128,21 @@ function delete_resource_group
 function install_moosh
 {
     # 'composer install' keeps failing, so try apt...
-    sudo apt-add-repository 'deb http://ppa.launchpad.net/zabuch/ppa/ubuntu trusty main'
-    sudo apt-get update || true
-    sudo apt-get install -y --allow-unauthenticated moosh
+#    sudo apt-add-repository 'deb http://ppa.launchpad.net/zabuch/ppa/ubuntu trusty main'
+#    sudo apt-get update || true
+#    sudo apt-get install -y --allow-unauthenticated moosh
 
-    # sudo apt update || return 1
-    # sudo apt install -y composer || return 1
-    # cd ~
-    # git clone git://github.com/tmuras/moosh.git || return 1
-    # cd moosh
-    # composer install || sleep 30 && composer install || sleep 30 && composer install || return 1
-    # mkdir -p ~/bin
-    # ln -s $PWD/moosh.php ~/bin/moosh
+    sudo apt update || return 1
+
+    apt install php-simplexml || return 1
+    sudo apt install -y composer || return 1
+
+    cd ~
+    git clone git://github.com/tmuras/moosh.git || return 1
+    cd moosh
+    composer install || sleep 30 && composer install || sleep 30 && composer install || return 1
+    mkdir -p ~/bin
+    ln -s $PWD/moosh.php ~/bin/moosh
 }
 
 MOODLE_PATH=/var/www/moodle/docroot
