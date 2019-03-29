@@ -280,7 +280,7 @@ function deallocate_services_in_resource_group
     # Stopping DBs and redis cache is currently not possible on Azure.
 }
 
-deploy_run_test1_teardown ltestinstance northeurope https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
+#deploy_run_test1_teardown ltestinstance northeurope https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
 
 function deploy_run_test1_teardown
 {
