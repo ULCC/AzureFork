@@ -31,7 +31,11 @@ function install_java_and_jmeter
     java -cp ~/apache-jmeter-5.1/lib/ext/jmeter-plugins-manager-0.19.jar org.jmeterplugins.repository.PluginManagerCMDInstaller
     # TODO Hard-coded .jmx file here. Do this for each individual .jmx file
     wget -O tmp-for-plugin-install.jmx https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/loadtest/simple-test-1.jmx || return 1
-    /usr/share/jmeter/bin/PluginsManagerCMD.sh install-for-jmx tmp-for-plugin-install.jmx
+
+    cd apache-jmeter-5.1
+
+    ./bin/PluginsManagerCMD.sh install-for-jmx tmp-for-plugin-install.jmx || return 1
+    ./bin/PluginsManagerCMD.sh install-for-jmx jpgc-standard || return 1
     rm tmp-for-plugin-install.jmx
 }
 
