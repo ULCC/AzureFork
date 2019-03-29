@@ -335,5 +335,5 @@ function run_load_test_postgres
 {
     check_ssh_agent_and_added_key || return 1
 
-    deploy_run_test1_teardown pgres southcentralus https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 postgres 16 256 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 800 2400 36000
+    deploy_run_test1_teardown pgres southcentralus https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json Moodle/loadtest/azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 postgres 16 256 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 800 2400 36000
 }
