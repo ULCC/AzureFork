@@ -134,7 +134,7 @@ function install_moosh
 
     sudo apt update || return 1
 
-    apt install php-simplexml || return 1
+    sudo apt install php-simplexml || return 1
     sudo apt install -y composer || return 1
 
     cd ~
