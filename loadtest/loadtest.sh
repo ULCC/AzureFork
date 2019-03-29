@@ -143,6 +143,8 @@ function install_moosh
     composer install || sleep 30 && composer install || sleep 30 && composer install || return 1
     mkdir -p ~/bin
     ln -s $PWD/moosh.php ~/bin/moosh
+
+    cd ~
 }
 
 MOODLE_PATH=/var/www/moodle/docroot
