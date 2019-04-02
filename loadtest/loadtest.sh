@@ -37,6 +37,8 @@ function install_java_and_jmeter
     ./bin/PluginsManagerCMD.sh install-for-jmx tmp-for-plugin-install.jmx || return 1
     ./bin/PluginsManagerCMD.sh install jpgc-standard || return 1
     rm tmp-for-plugin-install.jmx
+
+    sudo apt update; sudo apt install -y jq
 }
 
 function install_az_cli
