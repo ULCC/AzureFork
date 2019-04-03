@@ -268,7 +268,7 @@ function run_simple_test_1_on_resource_group
     echo $output | jq . > ${prefix}.deployment.json
 
     export JVM_ARGS="-Xms1024m -Xmx4096m"
-    local cmd="jmeter -n -t simple-test-1.jmx -l ${prefix}.jmeter.results.txt -j ${prefix}.jmeter.log -e -o ${prefix}.jmeter.report -Jhost=${moodle_host} -Jdb_host=${db_host} -Jdb_user=${moodle_db_user} '-Jdb_pass=${moodle_db_pass}' '-Jmoodle_user_pass=${moodle_user_pass}' -Jthreads=${test_threads_count} -Jrampup=${test_rampup_time_sec} -Jruntime=${test_run_time_sec}"
+    local cmd="jmeter -n -t Moodle/loadtest/simple-test-1.jmx -l ${prefix}.jmeter.results.txt -j ${prefix}.jmeter.log -e -o ${prefix}.jmeter.report -Jhost=${moodle_host} -Jdb_host=${db_host} -Jdb_user=${moodle_db_user} '-Jdb_pass=${moodle_db_pass}' '-Jmoodle_user_pass=${moodle_user_pass}' -Jthreads=${test_threads_count} -Jrampup=${test_rampup_time_sec} -Jruntime=${test_run_time_sec}"
     show_command_to_run $cmd
     eval $cmd
 }
