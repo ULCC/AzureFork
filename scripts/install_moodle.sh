@@ -197,6 +197,8 @@ set -ex
     mkdir -p /var/www/moodle
     mkdir -p /var/www/moodle/certs
     mkdir -p /var/www/moodle/moodledata
+    mkdir -p /var/www/moodle/bin
+    mkdir -p /var/www/moodle/scripts
 
     o365pluginVersion=$(get_o365plugin_version_from_moodle_version $moodleVersion)
     moodleStableVersion=$o365pluginVersion  # Need Moodle stable version for GDPR plugins, and o365pluginVersion is just Moodle stable version, so reuse it.
