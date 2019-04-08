@@ -295,7 +295,7 @@ function deallocate_services_in_resource_group
 
 #deploy_run_test1_teardown ltestinstance northeurope https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
 
-function deploy_run_test1_teardown
+function deploy_run_test1_no_teardown
 {
     local resource_group=${1}
     local location=${2}
@@ -314,16 +314,10 @@ function deploy_run_test1_teardown
     local test_threads_count=${15}
     local test_rampup_time_sec=${16}
     local test_run_time_sec=${17}
-    local delete_resource_group_flag=${18}  # Any non-empty string is considered true
 
     MOODLE_RG_LOCATION=$location
     deploy_moodle_with_some_parameters $resource_group $template_url $parameters_template_file $web_server_type $web_vm_sku $db_server_type $db_vcores $db_size_gb $file_server_type $file_server_disk_count $file_server_disk_size $redis_cache "$ssh_pub_key" || return 1
     run_simple_test_1_on_resource_group $resource_group $test_threads_count $test_rampup_time_sec $test_run_time_sec 1 || return 1
-    if [ -n "$delete_resource_group_flag" ]; then
-        az group delete -g $resource_group -y
-    else
-        deallocate_services_in_resource_group $resource_group
-    fi
 }
 
 function check_ssh_agent_and_added_key
@@ -339,7 +333,7 @@ function run_load_test_example
 {
     check_ssh_agent_and_added_key || return 1
 
-    deploy_run_test1_teardown ltestinstance$$ northeurope https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json Moodle/loadtest/azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
+    deploy_run_test1_no_teardown ltestinstance$$ northeurope https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json Moodle/loadtest/azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
 
 #   deploy_run_test1_teardown ltest6 southcentralus https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
 }
