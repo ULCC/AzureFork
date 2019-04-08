@@ -171,7 +171,7 @@
             "type": "string"
         },
         "autoscaleVmCountMax": {
-            "defaultValue": 10,
+            "defaultValue": 1,
             "metadata": {
                 "description": "Maximum number of autoscaled web VMs"
             },
