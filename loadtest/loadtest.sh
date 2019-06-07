@@ -331,9 +331,10 @@ function check_ssh_agent_and_added_key
 
 function run_load_test_example
 {
+    cd
     check_ssh_agent_and_added_key || return 1
 
-    deploy_run_test1_no_teardown ltestinstance$RANDOM northeurope https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json Moodle/loadtest/azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
+    deploy_run_test1_no_teardown ltestinstance$RANDOM northeurope https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json Moodle/loadtest/azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 120 600
 
 #   deploy_run_test1_teardown ltest6 southcentralus https://raw.githubusercontent.com/ULCC/AzureFork/ubuntu18/azuredeploy.json azuredeploy.parameters.loadtest.defaults.json apache Standard_DS2_v2 mysql 4 125 nfs 2 128 false "$(cat ~/.ssh/authorized_keys)" 1600 4800 18000
 }
