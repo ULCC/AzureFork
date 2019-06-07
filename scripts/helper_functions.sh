@@ -276,8 +276,8 @@ function setup_raid_disk_and_filesystem {
         fi
     fi
 
-    echo "Disk (RAID if multiple unpartitioned disks, or as is if only one unpartitioned disk) is set up, and env var AZMDL_DISK is set to '$AZMDL_DISK' for later reference"
-
+    echo "Disk (RAID if multiple unpartitioned disks, or as is if only one unpartitioned disk) is set up on ${PARTITION}, and env var AZMDL_DISK is set to '$AZMDL_DISK' for later reference"
+    sleep 10
     if [ -z "$CREATE_FILESYSTEM" ]; then
       echo "Creating filesystem on ${PARTITION}."
       mkfs -t ext4 ${PARTITION}
