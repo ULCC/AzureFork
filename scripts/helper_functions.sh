@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# This file will end up at /var/lib/waagent/custom-script/download/0/helper_functions.sh
 # Common functions definitions
 
 function get_setup_params_from_configs_json
