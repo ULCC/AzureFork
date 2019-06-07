@@ -215,7 +215,9 @@ function do_partition {
     local DISK=${1}   # E.g., /dev/sdc
 
     echo "Partitioning disk $DISK"
-    echo -ne "n\np\n1\n\n\nw\n" | fdisk "${DISK}" 
+#    echo -ne "n\np\n1\n\n\nw\n" | fdisk "${DISK}"
+    parted -s -a optimal ${DISK} mklabel gpt
+    parted -s -a optimal ${DISK} mkpart primary ext4 0% 100%
     #> /dev/null 2>&1
 
     #
@@ -278,8 +280,7 @@ function setup_raid_disk_and_filesystem {
 
     if [ -z "$CREATE_FILESYSTEM" ]; then
       echo "Creating filesystem on ${PARTITION}."
-#      mkfs -t ext4 ${PARTITION}
-      parted -s -a optimal ${PARTITION} --script mklabel gpt mkpart primary
+      mkfs -t ext4 ${PARTITION}
       mkdir -p "${MOUNTPOINT}"
       local UUID=$(blkid -u filesystem ${PARTITION}|awk -F "[= ]" '{print $3}'|tr -d "\"")
       add_local_filesystem_to_fstab "${UUID}" "${MOUNTPOINT}"
