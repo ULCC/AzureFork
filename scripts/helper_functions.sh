@@ -279,7 +279,7 @@ function setup_raid_disk_and_filesystem {
     if [ -z "$CREATE_FILESYSTEM" ]; then
       echo "Creating filesystem on ${PARTITION}."
 #      mkfs -t ext4 ${PARTITION}
-      parted -s -a optimal $(PARTITION} --script mklabel gpt mkpart primary
+      parted -s -a optimal ${PARTITION} --script mklabel gpt mkpart primary
       mkdir -p "${MOUNTPOINT}"
       local UUID=$(blkid -u filesystem ${PARTITION}|awk -F "[= ]" '{print $3}'|tr -d "\"")
       add_local_filesystem_to_fstab "${UUID}" "${MOUNTPOINT}"
